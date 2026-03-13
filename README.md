@@ -1,70 +1,133 @@
-# Getting Started with Create React App
+# Ex04 Simple Calculator - React Project
+## Date: 13/03/2024
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```
+Name : W Allen Johnston Ozario
+Reg. No : 212224110004
+```
 
-## Available Scripts
+## AIM
+To  develop a Simple Calculator using React.js with clean and responsive design, ensuring a smooth user experience across different screen sizes.
 
-In the project directory, you can run:
+## ALGORITHM
+### STEP 1
+Create a React App.
 
-### `npm start`
+### STEP 2
+Open a terminal and run:
+  <ul><li>npx create-react-app simple-calculator</li>
+  <li>cd simple-calculator</li>
+  <li>npm start</li></ul>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### STEP 3
+Inside the src/ folder, create a new file Calculator.js and define the basic structure.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### STEP 4
+Plan the UI: Display screen, number buttons (0-9), operators (+, -, *, /), clear (C), and equal (=).
 
-### `npm test`
+### STEP 5
+Create a new file Calculator.css in src/ and add the styling.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### STEP 6
+Open src/App.js and modify it.
 
-### `npm run build`
+### STEP 7
+Start the development server.
+  npm start
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### STEP 8
+Open http://localhost:3000/ in the browser.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### STEP 9
+Test the calculator by entering numbers and operations.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### STEP 10
+Fix styling issues and refine content placement.
 
-### `npm run eject`
+### STEP 11
+Deploy the website.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### STEP 12
+Upload to GitHub Pages for free hosting.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## PROGRAM
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Calculator.js
+```
+import { useState } from "react";
+export default function Calculator() {
+  const [display, setDisplay] = useState("0");
+  const [prev, setPrev] = useState(null);
+  const [op, setOp] = useState(null);
+  const [reset, setReset] = useState(false);
+  const [expr, setExpr] = useState("");
+  const rows = [["C","±","%","÷"],["7","8","9","×"],["4","5","6","−"],["1","2","3","+"],[null,"0",".","="]];
+  const ops = ["÷","×","−","+"];
+  const fns = ["C","±","%"];
+  const handleOp = (operator) => { setPrev(parseFloat(display)); setOp(operator); setExpr(display+" "+operator); setReset(true); };
+  const calculate = () => {
+    if(!op||prev===null) return;
+    const cur=parseFloat(display);
+    let r=op==="+"?prev+cur:op==="−"?prev-cur:op==="×"?prev*cur:cur?prev/cur:"Error";
+    setExpr(prev+" "+op+" "+cur+" =");
+    setDisplay(typeof r==="string"?r:String(parseFloat(Number(r).toFixed(8))));
+    setPrev(null);setOp(null);setReset(true);
+  };
+  const click=(v)=>{
+    if(v==="C"){setDisplay("0");setPrev(null);setOp(null);setReset(false);setExpr("");}
+    else if(v==="±")setDisplay(d=>String(parseFloat(d)*-1));
+    else if(v==="%")setDisplay(d=>String(parseFloat(d)/100));
+    else if(v==="=")calculate();
+    else if(ops.includes(v))handleOp(v);
+    else if(v===".")!display.includes(".")&&setDisplay(d=>d+".");
+    else if(display==="0"||reset){setDisplay(v);setReset(false);}
+    else setDisplay(d=>d.length<10?d+v:d);
+  };
+  const btnStyle=(v)=>({
+    gridColumn:v==="0"?"span 2":undefined,
+    background:v==="="?"#ff9f0a":ops.includes(v)?"#ff9f0a22":fns.includes(v)?"#636366":"#1c1c1e",
+    color:ops.includes(v)||v==="="?"#ff9f0a":"#fff",
+    border:"none",borderRadius:50,fontSize:22,fontWeight:500,
+    cursor:"pointer",transition:"all .15s",padding:"20px 0",
+    display:"flex",alignItems:"center",justifyContent:"center",
+  });
+  return(
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#000",fontFamily:"'SF Pro Display',-apple-system,sans-serif"}}>
+      <div style={{width:320,background:"#111",borderRadius:40,padding:20,boxShadow:"0 40px 80px rgba(0,0,0,.8)"}}>
+        <div style={{padding:"20px 16px",textAlign:"right"}}>
+          <div style={{color:"#636366",fontSize:14,minHeight:20,marginBottom:4}}>{expr}</div>
+          <div style={{color:"#fff",fontSize:display.length>9?28:48,fontWeight:300,letterSpacing:-1,overflow:"hidden",textOverflow:"ellipsis"}}>{display}</div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+          {rows.map((row,ri)=>row.map((v,ci)=>v===null?null:(
+            <button key={ri+"-"+ci} onClick={()=>click(v)} style={btnStyle(v)}
+              onMouseEnter={e=>e.currentTarget.style.opacity=".75"}
+              onMouseLeave={e=>e.currentTarget.style.opacity="1"}>
+              {v}
+            </button>
+          )))}
+        </div>
+      </div>
+    </div>
+  );
+}
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### App.js
+```
+import Calculator from './Calculator.js';
 
-## Learn More
+function App() {
+  return <Calculator />;
+}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+export default App;
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## OUTPUT
 
-### Code Splitting
+<img width="1915" height="1146" alt="image" src="https://github.com/user-attachments/assets/0e4aec49-8f76-44e9-ae47-94fe29b729b5" />
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## RESULT
+The program for developing a simple calculator in React.js is executed successfully.
